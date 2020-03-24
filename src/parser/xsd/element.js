@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2016,2018. All Rights Reserved.
+// Node module: strong-soap
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 'use strict';
 
 var XSDElement = require('./xsdElement');
@@ -56,7 +61,7 @@ class Element extends XSDElement {
         if (typeDescriptor) {
           descriptor.elements = typeDescriptor.elements;
           descriptor.attributes = typeDescriptor.attributes;
-          definitions.mixed = typeDescriptor.mixed;
+          descriptor.mixed = typeDescriptor.mixed;
           descriptor.extension = typeDescriptor.extension;
           if(descriptor.extension && descriptor.extension.isSimple === true) {
             descriptor.isSimple = true;
@@ -77,7 +82,7 @@ class Element extends XSDElement {
           if (childDescriptor) {
             descriptor.elements = childDescriptor.elements;
             descriptor.attributes = childDescriptor.attributes;
-            definitions.mixed = childDescriptor.mixed;
+            descriptor.mixed = childDescriptor.mixed;
           }
           break;
         } else if (child instanceof SimpleType) {

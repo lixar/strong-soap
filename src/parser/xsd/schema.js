@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2016,2018. All Rights Reserved.
+// Node module: strong-soap
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 'use strict';
 
 var _ = require('lodash');
@@ -18,9 +23,12 @@ class Schema extends XSDElement {
     this.attributeGroups = {};
   }
 
-  merge(source) {
+  merge(source, isInclude) {
+    if (source === this) return this;
     assert(source instanceof Schema);
-    if (this.$targetNamespace === source.$targetNamespace) {
+    if (this.$targetNamespace === source.$targetNamespace ||
+      // xsd:include allows the target schema that does not have targetNamespace
+      (isInclude && source.$targetNamespace === undefined)) {
       _.merge(this.complexTypes, source.complexTypes);
       _.merge(this.simpleTypes, source.simpleTypes);
       _.merge(this.elements, source.elements);
@@ -31,6 +39,9 @@ class Schema extends XSDElement {
       // aliases; this appears to cause problems with identifying types. Preventing the merge appears to give a more
       // predictable result, but may introduce other issues.
       // _.merge(this.xmlns, source.xmlns);
+      if (Array.isArray(source.includes)) {
+        this.includes = _.uniq(this.includes.concat(source.includes));
+      }
     }
     return this;
   }
@@ -48,7 +59,8 @@ class Schema extends XSDElement {
           this.includes.push({
             namespace: child.$namespace || child.$targetNamespace
             || this.$targetNamespace,
-            location: location
+            location: location,
+            type: child.name // include or import
           });
         }
         break;

@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2016,2018. All Rights Reserved.
+// Node module: strong-soap
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 'use strict';
 
 var g = require('./globalize');
@@ -25,12 +30,13 @@ class Server extends Base {
     options = options || {};
     this.path = path;
     this.services = services;
-    this.xmlHandler = new XMLHandler(this.wsdl.options);
 
     debug('Server parameters: path: %s services: %j wsdl: %j', path, services, wsdl);
     if (path[path.length - 1] !== '/')
       path += '/';
     wsdl.load(function(err) {
+      if (err) throw err;
+      self.xmlHandler = new XMLHandler(self.wsdl.definitions.schemas, self.wsdl.options);
       var listeners = server.listeners('request').slice();
 
       server.removeAllListeners('request');
